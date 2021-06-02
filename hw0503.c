@@ -104,7 +104,7 @@ void func01( FILE *pFile , n *page )
     char *token = strtok( remain1 , ">" );
     token = strtok( NULL , ">" );
     strncpy( page->year , token , 4 );
-    printf( "%s\n" , page->year );
+    //printf( "%s\n" , page->year );
 }
 
 int main( int argc , char *argv[] )
