@@ -11,11 +11,13 @@ typedef struct name
     char title[2048];
     char author[20][256];
     char source[1024];
+    char source1[1024];//
+    char source2[1024];//
     char year[4];
     int32_t count;
 }n;
 
-void printer( int32_t i , const n page )
+void printer( int32_t i , const n page )//
 {
     printf( "Page %d:\n" , i+1 );
     printf( "Title: %s\n" , page.title );
@@ -31,9 +33,27 @@ void printer( int32_t i , const n page )
             printf( " %s," , page.author[j] );
         }
     }
+    printf( "Source: " );
+    if( strlen(page.source) )
+    {
+        printf( "%s" , page.source );
+    }
+    if( strlen(page.source1) )
+    {
+        printf( " %s" , page.source1 );
+    }
+    else
+    {
+        printf("\n");
+    }
+    if( strlen(page.source2) )
+    {
+        printf( " %s\n" , page.source2 );
+    }
+   
     printf( "Date: %s\n" , page.year );
     printf( "\n\n\n" );    
-}
+}//
 
 void func( FILE *pFile , n *page )
 {
@@ -104,8 +124,62 @@ void func01( FILE *pFile , n *page )
     char *token = strtok( remain1 , ">" );
     token = strtok( NULL , ">" );
     strncpy( page->year , token , 4 );
-    //printf( "%s\n" , page->year );
+    printf( "%s\n" , page->year );
 }
+
+void func02( FILE *pFile , n *page )//
+{
+    fseek( pFile , 0 , SEEK_END );
+    int64_t size = 0;
+    size = ftell( pFile );
+    fseek( pFile , 0 , SEEK_SET );
+    char *remain = calloc( size , sizeof(int) );
+    fread( remain , size , 1 , pFile );
+    char *remain1 = strstr( remain , "<span itemprop=\"name\">" );
+    char *token = strtok( remain1 , ">" );
+    token = strtok( NULL , "<" );
+    strcpy( page->source , token );
+    if(strlen(page->source))
+    {
+        //printf( "%s\n" , page->source );
+    }
+}//
+
+void func03( FILE *pFile , n *page )//
+{
+    fseek( pFile , 0 , SEEK_END );
+    int64_t size = 0;
+    size = ftell( pFile );
+    fseek( pFile , 0 , SEEK_SET );
+    char *remain = calloc( size , sizeof(int) );
+    fread( remain , size , 1 , pFile );
+    char *remain1 = strstr( remain , "<span itemprop=\"volumeNumber\">" );
+    char *token = strtok( remain1 , ">" );
+    token = strtok( NULL , "<" );
+    strcpy( page->source1 , token );
+    if(strlen(page->source1))
+    {
+        //printf( "%s\n" , page->source );
+    }
+}//
+
+void func04( FILE *pFile , n *page )//
+{
+    fseek( pFile , 0 , SEEK_END );
+    int64_t size = 0;
+    size = ftell( pFile );
+    fseek( pFile , 0 , SEEK_SET );
+    char *remain = calloc( size , sizeof(int) );
+    fread( remain , size , 1 , pFile );
+    char *remain1 = strstr( remain , "<span itemprop=\"pagination\">" );
+    char *token = strtok( remain1 , ">" );
+    token = strtok( NULL , "<" );
+    strcpy( page->source2 , token );
+    if(strlen(page->source2))
+    {
+        //printf( "%s\n" , page->source );
+    }
+}//
 
 int main( int argc , char *argv[] )
 {
@@ -246,6 +320,9 @@ int main( int argc , char *argv[] )
             if( i != 0 )
             {
                 func01( r2 , &page[i-1] );
+				func02( r2 , &page[i-1] );//
+            	func03( r2 , &page[i-1] );//
+            	func04( r2 , &page[i-1] );//
             }
             fclose( r2  );
         }
@@ -255,7 +332,10 @@ int main( int argc , char *argv[] )
         fread( l , 1024 , 1 , fp );
         fwrite( l , 1024 , 1 , little );
         func01( little , &page[number-1] );
-        
+        func01( little , &page[number-1] );
+    	func02( little , &page[number-1] );//
+    	func03( little , &page[number-1] );//
+    	func04( little , &page[number-1] );//
         for(int i=0;i<number;i++)
         {
             printer( i , page[i] );
