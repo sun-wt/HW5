@@ -19,7 +19,4 @@ hw0502: hw0502.c
 hw0503: hw0503.c
 	gcc -g -fPIC -c hw0503.c
 	gcc -shared hw0503.o -o libfoo.so
-	
-	
-clean:
-	rm -f test-1.c
+
